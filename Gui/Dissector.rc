@@ -1,0 +1,228 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1251)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_SMALL               ICON                    "res\\Icon.ico"
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,4,0,1
+ PRODUCTVERSION 1,4,0,1
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "T15 (c)"
+            VALUE "FileDescription", "Dissector"
+            VALUE "FileVersion", "1, 0, 0, 0"
+            VALUE "InternalName", "Memory Dissector"
+            VALUE "LegalCopyright", "Copyright (C) 2008"
+            VALUE "LegalTrademarks", "internal"
+            VALUE "OriginalFilename", "Dissector"
+            VALUE "ProductName", "Memory Dissector plugin"
+            VALUE "ProductVersion", "1, 0, 0, 0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DISSECTOR DIALOGEX 0, 0, 287, 129
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Information",IDC_STATIC,4,80,207,43
+    LTEXT           "The current VA shown for the setted cursor. The memory dump stores to default file",IDC_STATIC,8,89,198,18
+    PUSHBUTTON      "Ok",IDC_OK_EXIT,225,106,50,14
+    EDITTEXT        IDC_DUMP_FNAME,110,67,97,11,ES_AUTOHSCROLL
+    LTEXT           "Dump file name",IDC_STATIC,54,68,51,8
+    RADIOBUTTON     "dump mode",IDC_RADIO1,223,14,62,9
+    RADIOBUTTON     "patch mode",IDC_RADIO2,223,28,62,9
+    RADIOBUTTON     "nopping mode",IDC_RADIO3,223,42,62,9
+END
+
+IDD_MEMORYDUMP DIALOGEX 0, 0, 214, 65
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "From VA",IDC_STATIC,7,11,53,8
+    EDITTEXT        IDC_FROM_VA,6,19,92,12,ES_AUTOHSCROLL
+    LTEXT           "To VA",IDC_STATIC,7,31,53,8
+    EDITTEXT        IDC_TO_VA,6,40,91,12,ES_AUTOHSCROLL
+    LTEXT           "Current VA",IDC_STATIC,118,11,43,8
+    EDITTEXT        IDC_CURRENT_VA,114,19,93,12,ES_AUTOHSCROLL | ES_READONLY
+    GROUPBOX        "Input parameters",IDC_STATIC,1,1,212,64
+    PUSHBUTTON      "...",IDC_SELECT_REGION,99,19,13,11
+    EDITTEXT        IDC_TO_SIZE,100,40,76,12,ES_AUTOHSCROLL
+    LTEXT           "or size",IDC_STATIC,100,31,53,8
+END
+
+IDD_MEMORYPATCH DIALOGEX 0, 0, 214, 65
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "From VA",IDC_STATIC,7,11,53,8
+    EDITTEXT        IDC_FROM_VA,6,19,92,12,ES_AUTOHSCROLL
+    LTEXT           "To VA (or size)",IDC_STATIC,7,31,53,8
+    EDITTEXT        IDC_TO_VA,6,40,92,12,ES_AUTOHSCROLL
+    GROUPBOX        "Input parameters",IDC_STATIC,1,1,212,64
+    LTEXT           "dump size",IDC_STATIC,100,31,53,8
+    EDITTEXT        IDC_TO_SIZE,99,40,76,12,ES_AUTOHSCROLL | WS_DISABLED
+    CONTROL         "make changes on disk",IDC_MAKE_PERMANENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,54,85,9
+END
+
+IDD_MEMORYNOPPING DIALOGEX 0, 0, 214, 65
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_VISIBLE
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "From VA",IDC_STATIC,7,11,53,8
+    EDITTEXT        IDC_FROM_VA,6,19,92,12,ES_AUTOHSCROLL
+    LTEXT           "To VA (or size)",IDC_STATIC,7,31,53,8
+    EDITTEXT        IDC_TO_VA,6,40,92,12,ES_AUTOHSCROLL
+    GROUPBOX        "Input parameters",IDC_STATIC,1,1,212,64
+    LTEXT           "or size",IDC_STATIC,100,31,53,8
+    EDITTEXT        IDC_TO_SIZE,99,40,56,12,ES_AUTOHSCROLL
+    CONTROL         "make changes on disk",IDC_MAKE_PERMANENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,54,85,9
+END
+
+IDD_MEMREG_SELECT DIALOGEX 0, 0, 287, 130
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Ok",IDC_OK_EXIT,236,114,50,14
+    CONTROL         "",IDC_MEMREGIONS,"SysListView32",LVS_REPORT | LVS_OWNERDRAWFIXED | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,0,0,235,128
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DISSECTOR, DIALOG
+    BEGIN
+    END
+
+    IDD_MEMORYDUMP, DIALOG
+    BEGIN
+    END
+
+    IDD_MEMORYPATCH, DIALOG
+    BEGIN
+    END
+
+    IDD_MEMREG_SELECT, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 129
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_APP_TITLE           "Memory Dissector plugin"
+    IDC_WND_CLASS           "MEMORY_DISSECTOR_WND"
+END
+
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

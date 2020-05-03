@@ -1,0 +1,6 @@
+Debug
+Release
+IdaGuiBuild
+*.aps
+*.ncb
+*.suo

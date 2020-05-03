@@ -21,3 +21,9 @@ working with packaged code._
 
 * Dump portions of memory from debugged process
 * Patch physical data on disk
+
+
+## Build
+To build this project it is necessary to add !_IDA_SDK_ROOT environment variable.
+The solution is consists of two projects. To build a plugin, you must build IdaPlugin. 
+The second one is necessary for debugging purposes, as well as to facilitate development.

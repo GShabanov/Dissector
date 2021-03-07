@@ -94,8 +94,6 @@ inline void __cdecl operator delete(void *, void *) throw()
 #include "dialogBase.h"
 
 
-extern class CConfiguration  *configuration;
-
 #ifdef __IDP__
 #include "..\IdaPlugin\idainc.h"
 #endif // __IDP__

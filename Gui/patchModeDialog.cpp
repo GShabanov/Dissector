@@ -167,7 +167,7 @@ CPatchModeDialog::~CPatchModeDialog()
 
     LRESULT result = Button_GetCheck(m_hwndMakeChangesOnDisk);
     
-    configuration->m_makeChangeOnDisk = (BST_CHECKED == result) ? TRUE : FALSE;
+    CConfiguration::Get()->m_makeChangeOnDisk = (BST_CHECKED == result) ? TRUE : FALSE;
     pPatching->bMakePermanentChanges = (BST_CHECKED == result) ? TRUE : FALSE;
     
     //m_parameters->dialogResult = FALSE;

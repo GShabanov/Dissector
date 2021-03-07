@@ -72,6 +72,7 @@ CSelectVaDialog::PopulateMemoryRegions()
 
     for (INT_PTR i = 0, j = m_ProgramVaSpace.count(); i < j; i++)
     {
+
         const MEMORY_ENUM_ENTRY *entry = &m_ProgramVaSpace[i];
 
 
@@ -643,6 +644,10 @@ CSelectVaDialog::OnSize(HWND, UINT state, int cx, int cy)
     if (state != SIZE_MINIMIZED)
     {
         RECT    rect;
+
+        //
+        // measuaring the new positions for controls
+        //
 
         rect.top = 0;
         rect.bottom = cy - 2;

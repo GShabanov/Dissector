@@ -6,7 +6,7 @@
 *       configuration for Dissector                                                     *
 *                                                                                       *
 *   Author:                                                                             *
-*       Gennady Shabanov () 15-Oct-2007                                                 *
+*       G Shabanov () 15-Oct-2007                                                       *
 *                                                                                       *
 *   Revision History:                                                                   *
 \***************************************************************************************/
@@ -160,7 +160,7 @@ CConfiguration::OpenProgramKey(HKEY *hkOutKey, ACCESS_MASK DesiredAccess)
 
     status = RegCreateKey(
         hkPlugins,
-        _T("MemoryDumper"),
+        _T("Dissector"),
         &hkDumper);
 
     RegCloseKey(hkPlugins);

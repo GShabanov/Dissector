@@ -61,7 +61,7 @@ CMainDialog::InitTypeOfWork(HWND hwndParent)
     //
     // DUMP mode selection
     //
-    if (configuration->m_SelectedTab == Dumping)
+    if (CConfiguration::Get()->m_SelectedTab == Dumping)
     {
 
         m_pTypeofWork = new CDumpModeDialog(
@@ -92,7 +92,7 @@ CMainDialog::InitTypeOfWork(HWND hwndParent)
     //
     // PATCH mode selection
     //
-    if (configuration->m_SelectedTab == Patching)
+    if (CConfiguration::Get()->m_SelectedTab == Patching)
     {
 
         m_pTypeofWork = new CPatchModeDialog(
@@ -123,7 +123,7 @@ CMainDialog::InitTypeOfWork(HWND hwndParent)
     //
     // NOP mode selection
     //
-    if (configuration->m_SelectedTab == Nopping)
+    if (CConfiguration::Get()->m_SelectedTab == Nopping)
     {
 
         m_pTypeofWork = new CNoppingModeDialog(
@@ -208,22 +208,22 @@ CMainDialog::OnInitDialog(
     RECT  windowRect;
     GetWindowRect(GetDesktopWindow(), &windowRect);
 
-    if (configuration->m_hwndRect.top < windowRect.top ||
-        configuration->m_hwndRect.bottom > windowRect.bottom ||
-        configuration->m_hwndRect.left < windowRect.left ||
-        configuration->m_hwndRect.right > windowRect.right)
+    if (CConfiguration::Get()->m_hwndRect.top < windowRect.top ||
+        CConfiguration::Get()->m_hwndRect.bottom > windowRect.bottom ||
+        CConfiguration::Get()->m_hwndRect.left < windowRect.left ||
+        CConfiguration::Get()->m_hwndRect.right > windowRect.right)
     {
-        memset(&configuration->m_hwndRect, 0, sizeof(RECT));
+        memset(&CConfiguration::Get()->m_hwndRect, 0, sizeof(RECT));
     }
 
-    if (configuration->m_hwndRect.right != 0 &&
-        configuration->m_hwndRect.bottom != 0)
+    if (CConfiguration::Get()->m_hwndRect.right != 0 &&
+        CConfiguration::Get()->m_hwndRect.bottom != 0)
     {
         MoveWindow(this->m_hwnd, 
-            configuration->m_hwndRect.left, 
-            configuration->m_hwndRect.top,
-            configuration->m_hwndRect.right - configuration->m_hwndRect.left,
-            configuration->m_hwndRect.bottom - configuration->m_hwndRect.top,
+            CConfiguration::Get()->m_hwndRect.left, 
+            CConfiguration::Get()->m_hwndRect.top,
+            CConfiguration::Get()->m_hwndRect.right - CConfiguration::Get()->m_hwndRect.left,
+            CConfiguration::Get()->m_hwndRect.bottom - CConfiguration::Get()->m_hwndRect.top,
             TRUE);
     }
 
@@ -274,7 +274,7 @@ CMainDialog::OnDestroy(HWND)
     RECT    rect;
     GetWindowRect(this->m_hwnd, &rect);
 
-    configuration->m_hwndRect = rect;
+    CConfiguration::Get()->m_hwndRect = rect;
 
     SIZE_T length = GetWindowTextLength(this->m_hwndFileName);
 
@@ -359,9 +359,9 @@ CMainDialog::OnCommand(
 
     if (hwndCtl == m_hwndRadioDump)
     {
-        if (configuration->m_SelectedTab != 0)
+        if (CConfiguration::Get()->m_SelectedTab != 0)
         {
-            configuration->m_SelectedTab = 0;
+            CConfiguration::Get()->m_SelectedTab = 0;
 
             InitTypeOfWork(this->m_hwnd);
         }
@@ -369,9 +369,9 @@ CMainDialog::OnCommand(
 
     if (hwndCtl == m_hwndRadioFilling)
     {
-        if (configuration->m_SelectedTab != 1)
+        if (CConfiguration::Get()->m_SelectedTab != 1)
         {
-            configuration->m_SelectedTab = 1;
+            CConfiguration::Get()->m_SelectedTab = 1;
 
             InitTypeOfWork(this->m_hwnd);
         }
@@ -379,9 +379,9 @@ CMainDialog::OnCommand(
 
     if (hwndCtl == m_hwndRadioNopping)
     {
-        if (configuration->m_SelectedTab != 2)
+        if (CConfiguration::Get()->m_SelectedTab != 2)
         {
-            configuration->m_SelectedTab = 2;
+            CConfiguration::Get()->m_SelectedTab = 2;
 
             InitTypeOfWork(this->m_hwnd);
         }

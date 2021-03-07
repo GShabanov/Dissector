@@ -40,7 +40,9 @@ HWND        g_hwndIdaWnd;
 HINSTANCE   g_hInstance;
 
 
-CConfiguration  *configuration = NULL;
+//CConfiguration  *configuration = NULL;
+
+//CConfiguration  configuration;
 
 void
 Assert(const char *, const char *, const int )
@@ -478,7 +480,7 @@ DissectProcess(DWORD dwProcessId)
 
     GUI_PARAMETERS  parameters;
 
-    patchParameters.bMakePermanentChanges = configuration->m_makeChangeOnDisk == TRUE ? TRUE : FALSE;
+    patchParameters.bMakePermanentChanges = CConfiguration::Get()->m_makeChangeOnDisk == TRUE ? TRUE : FALSE;
 
     //
     // set allocators
@@ -570,9 +572,9 @@ _tWinMain(
         return 0;
     }
 
-    configuration = new CConfiguration();
+    //configuration = new CConfiguration();
 
-    configuration->GetConfig();
+    CConfiguration::Get()->GetConfig();
 
 
     DWORD currentDebugThread = GetCurrentThreadId();
@@ -590,7 +592,7 @@ _tWinMain(
 
     msg("[*] finished\n");
 
-    configuration->SaveConfig();
+    CConfiguration::Get()->SaveConfig();
 
     return result == TRUE ? true : false;
 }

@@ -161,7 +161,7 @@ PluginInit()
         return PLUGIN_SKIP;
     }
 
-    configuration = new CConfiguration();
+    CConfiguration::Get()->GetConfig();
 
     return (PLUGIN.flags & PLUGIN_UNL) ? PLUGIN_OK : PLUGIN_KEEP;
 }

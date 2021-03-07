@@ -40,6 +40,7 @@ GetFileSectionFromAddress(IN PIMAGE_DOS_HEADER DosHeader, PVOID Address)
 
     __try
     {
+
         if (DosHeader->e_magic != IMAGE_DOS_SIGNATURE)
         {
             return NULL;
@@ -56,6 +57,10 @@ GetFileSectionFromAddress(IN PIMAGE_DOS_HEADER DosHeader, PVOID Address)
 
         WORD    NumberOfSections     = pNTHeader->FileHeader.NumberOfSections;
         DWORD   ImageBase            = (DWORD)pNTHeader->OptionalHeader.ImageBase;
+
+        //
+        // check for address entry in the region of the section
+        //
 
         for (auto section = 0; section < NumberOfSections; section++)
         {
@@ -83,11 +88,13 @@ GetFileSectionFromAddress(IN PIMAGE_DOS_HEADER DosHeader, PVOID Address)
 
 BOOL
 RelativeAddressToSection32(
-    const IN DATA_READ_FUNCTION dataRead, const PVOID context,
+    const IN DATA_READ_FUNCTION  dataRead,
+    const PVOID                  context,
     const IN PIMAGE_NT_HEADERS32 ntHeader,
-    const PVOID ntHeaderPtr,
-    const ULONG_PTR RelativeAddress,
-    IMAGE_SECTION_HEADER &section)
+    const PVOID                  ntHeaderPtr,
+    const ULONG_PTR              RelativeAddress,
+    IMAGE_SECTION_HEADER        &section
+    )
 /*++
     Function:
         RelativeAddressToSection32
@@ -130,15 +137,28 @@ RelativeAddressToSection32(
     ULONG currentSectionAddress = (ULONG)((UCHAR *)ntHeaderPtr + 
         FIELD_OFFSET(IMAGE_NT_HEADERS32, OptionalHeader) + ntHeader->FileHeader.SizeOfOptionalHeader);
 
+    //
+    // check for address entry in the region of the section
+    //
+
     for (ULONG i = 0; i < numberOfSections; i++)
     {
         IMAGE_SECTION_HEADER  Section;
+
+        //
+        // read the section header
+        //
 
         if (!dataRead(context, currentSectionAddress, &Section, sizeof(IMAGE_SECTION_HEADER))) {
             return FALSE;
         }
 
         SIZE_T sectionDataSize = 0;
+
+        //
+        // There are cases when the size of the date section is determined only by the raw size.
+        // In this case, we determine what size should be.
+        //
 
         if (Section.Misc.VirtualSize > 0 && Section.Misc.VirtualSize > Section.SizeOfRawData)
         {
@@ -148,6 +168,10 @@ RelativeAddressToSection32(
         {
             sectionDataSize = Section.SizeOfRawData;
         }
+
+        //
+        // check in range
+        //
 
         if (RelativeAddress >= Section.VirtualAddress &&
             RelativeAddress < Section.VirtualAddress + sectionDataSize)
@@ -165,11 +189,13 @@ RelativeAddressToSection32(
 
 BOOL
 RelativeAddressToSection64(
-    const IN DATA_READ_FUNCTION dataRead, const PVOID context,
-    const IN PIMAGE_NT_HEADERS64 ntHeader,
-    const IN PVOID ntHeaderPtr,
-    const IN ULONG_PTR RelativeAddress,
-    OUT IMAGE_SECTION_HEADER &section)
+    const IN DATA_READ_FUNCTION     dataRead,
+    const PVOID                     context,
+    const IN PIMAGE_NT_HEADERS64    ntHeader,
+    const IN PVOID                  ntHeaderPtr,
+    const IN ULONG_PTR              RelativeAddress,
+    OUT IMAGE_SECTION_HEADER        &section
+    )
 /*++
     Function:
         RelativeAddressToSection64
@@ -212,9 +238,17 @@ RelativeAddressToSection64(
     ULONG64 currentSectionAddress = (ULONG64)((UCHAR *)ntHeaderPtr + 
         FIELD_OFFSET(IMAGE_NT_HEADERS64, OptionalHeader) + ntHeader->FileHeader.SizeOfOptionalHeader);
 
+    //
+    // check for address entry in the region of the section
+    //
+
     for (ULONG i = 0; i < numberOfSections; i++)
     {
         IMAGE_SECTION_HEADER  Section;
+
+        //
+        // read the section header
+        //
 
         if (!dataRead(context, currentSectionAddress, &Section, sizeof(IMAGE_SECTION_HEADER))) {
             return FALSE;
@@ -222,7 +256,12 @@ RelativeAddressToSection64(
 
         SIZE_T sectionDataSize = 0;
 
-        if (Section.Misc.VirtualSize > 0 && Section.Misc.VirtualSize > Section.SizeOfRawData)
+        //
+        // There are cases when the size of the date section is determined only by the raw size.
+        // In this case, we determine what size should be.
+        //
+
+        if (Section.Misc.VirtualSize > 0 && Section.Misc.VirtualSize >= Section.SizeOfRawData)
         {
             sectionDataSize = Section.Misc.VirtualSize;
         }
@@ -248,9 +287,11 @@ RelativeAddressToSection64(
 BOOL
 GetPhysicalOffsetFromRelativeAddress32(
     const IN DATA_READ_FUNCTION dataRead,
-    const PVOID context,
-    const ULONG baseAddress,
-    IN ULONG relativeAddress, OUT LONG_PTR *offset)
+    const PVOID                 context,
+    const ULONG                 baseAddress,
+    IN ULONG relativeAddress,
+    OUT LONG_PTR *offset
+    )
 /*++
 
     Function:
@@ -270,7 +311,7 @@ GetPhysicalOffsetFromRelativeAddress32(
 
         relativeAddress - [in] relative address
 
-        offset          - [out] physical offset
+        offset          - [out] raw offset
 
 
     Returns:
@@ -305,10 +346,18 @@ GetPhysicalOffsetFromRelativeAddress32(
 
     IMAGE_SECTION_HEADER Section;
 
+    //
+    // try to find suitable section
+    //
+
     if (RelativeAddressToSection32(dataRead, context, ntHeader, (const PVOID)imageNtHeadersPtr, relativeAddress, Section) != TRUE)
     {
         return FALSE;
     }
+
+    //
+    // calculate raw offset
+    //
 
     *offset = relativeAddress - Section.VirtualAddress + Section.PointerToRawData;
 
@@ -317,10 +366,12 @@ GetPhysicalOffsetFromRelativeAddress32(
 
 BOOL
 GetPhysicalOffsetFromRelativeAddress64(
-    const IN DATA_READ_FUNCTION dataRead, const PVOID context,
+    const IN DATA_READ_FUNCTION dataRead,
+    const PVOID context,
     const IN ULONG64 baseAddress,
     const IN ULONG relativeAddress,
-    OUT LONG_PTR *offset)
+    OUT LONG_PTR *offset
+    )
 /*++
 
     Function:
@@ -340,7 +391,7 @@ GetPhysicalOffsetFromRelativeAddress64(
 
         relativeAddress - [in] relative address
 
-        offset          - [out] physical offset
+        offset          - [out] raw offset
 
 
     Returns:
@@ -378,6 +429,10 @@ GetPhysicalOffsetFromRelativeAddress64(
 
     IMAGE_SECTION_HEADER Section;
 
+    //
+    // try to find suitable section
+    //
+
     if (RelativeAddressToSection64(
         dataRead, context,
         ntHeader, (const PVOID)imageNtHeadersPtr, relativeAddress, Section) != TRUE)
@@ -385,6 +440,9 @@ GetPhysicalOffsetFromRelativeAddress64(
         return FALSE;
     }
 
+    //
+    // calculate raw offset
+    //
 
     *offset = relativeAddress - Section.VirtualAddress + Section.PointerToRawData;
 
@@ -393,8 +451,12 @@ GetPhysicalOffsetFromRelativeAddress64(
 
 BOOL
 GetPhysicalOffsetFromRelativeAddress(
-    const IN DATA_READ_FUNCTION dataRead, const PVOID context,
-    const IN ULONG64 baseAddress, const IN ULONG relativeAddress, OUT LONG_PTR *offset)
+    const IN DATA_READ_FUNCTION dataRead,
+    const PVOID                 context,
+    const IN ULONG64            baseAddress,
+    const IN ULONG              relativeAddress,
+    OUT LONG_PTR               *offset
+    )
 /*++
     Function:
         GetPhysicalOffsetFromVirtualAddress
@@ -406,16 +468,18 @@ GetPhysicalOffsetFromRelativeAddress(
 
     Arguments:
 
-        baseAddress    - [in] base address
+        dataRead          - [in] data read function
 
-        address        - [in] virtual address in image
+        context           - [in] data read function context
 
-        offset         - [out] acquired physical offest
+        baseAddress       - [in] base address of image
 
-        mappedAsImage  - [in] mapped as image or raw on disk
+        relativeAddress   - [in] relative address 
+
+        offset            - [out] raw offset
 
     Returns:
-        result
+        BOOL
 
 --*/
 {
@@ -432,8 +496,11 @@ GetPhysicalOffsetFromRelativeAddress(
     }
 
     if (!dataRead(
-            context,
-            baseAddress + dosHeader->e_lfanew, buffer, sizeof(IMAGE_NT_HEADERS)))
+        context,
+        baseAddress + dosHeader->e_lfanew,
+        buffer,
+        sizeof(IMAGE_NT_HEADERS))
+        )
     {
         return FALSE;
     }
@@ -443,6 +510,10 @@ GetPhysicalOffsetFromRelativeAddress(
     if (ntHeader->Signature != IMAGE_NT_SIGNATURE) {
         return FALSE;
     }
+
+    //
+    // depending on the section header call appropriate routine
+    //
 
     if (ntHeader->FileHeader.Machine == IMAGE_FILE_MACHINE_I386)
     {
@@ -491,6 +562,10 @@ CopyFile(HANDLE hInputFile, HANDLE hOutputFile)
 
     dwSizeLow = GetFileSize(hInputFile, &dwSizeHigh);
 
+    //
+    // allocate the data buffer
+    //
+
     if (dwSizeHigh > 0) {
 
         allocSize = SystemInfo.dwAllocationGranularity * 4;
@@ -512,27 +587,29 @@ CopyFile(HANDLE hInputFile, HANDLE hOutputFile)
 
     if (FileData != NULL)
     {
-        DWORD dwReaded = NULL;
-
-        while (ReadFile(
-            hInputFile,
-            FileData,
-            (DWORD)allocSize,
-            &dwReaded, NULL) == TRUE && dwReaded > NULL)
-        {
-            WriteFile(hOutputFile, FileData, dwReaded, &dwReaded, NULL);
-        }
-
-        FlushFileBuffers(hOutputFile);
-
-        VirtualFree(FileData, 0, MEM_RELEASE);
-
-        return TRUE;
-    }
-    else
-    {
         return FALSE;
     }
+
+    DWORD dwReaded = NULL;
+
+    //
+    // file copy loop
+    //
+
+    while (ReadFile(
+        hInputFile,
+        FileData,
+        (DWORD)allocSize,
+        &dwReaded, NULL) == TRUE && dwReaded > NULL)
+    {
+        WriteFile(hOutputFile, FileData, dwReaded, &dwReaded, NULL);
+    }
+
+    FlushFileBuffers(hOutputFile);
+
+    VirtualFree(FileData, 0, MEM_RELEASE);
+
+    return TRUE;
 
 }
 

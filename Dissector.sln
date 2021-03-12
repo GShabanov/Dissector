@@ -1,8 +1,16 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "IdaPlugin", "IdaPlugin\IdaPlugin.vcxproj", "{050C9D37-420A-4607-A20C-1EAAC8C0958C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56} = {34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GuiBootstrap", "GuiBootstrap\GuiBootstrap.vcxproj", "{15902F23-673C-4A96-BAD8-F07E5D676D87}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56} = {34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Caramel32", "Caramel32\Caramel32.vcxproj", "{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +34,12 @@ Global
 		{15902F23-673C-4A96-BAD8-F07E5D676D87}.Release|Win32.Build.0 = Release|Win32
 		{15902F23-673C-4A96-BAD8-F07E5D676D87}.Release|x64.ActiveCfg = Release|x64
 		{15902F23-673C-4A96-BAD8-F07E5D676D87}.Release|x64.Build.0 = Release|x64
+		{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}.Debug|Win32.ActiveCfg = Debug|Win32
+		{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}.Debug|Win32.Build.0 = Debug|Win32
+		{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}.Debug|x64.ActiveCfg = Debug|Win32
+		{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}.Release|Win32.ActiveCfg = Release|Win32
+		{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}.Release|Win32.Build.0 = Release|Win32
+		{34A101F0-C73C-4F85-BC8F-D9E0EE1A4C56}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

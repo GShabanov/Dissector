@@ -60,6 +60,9 @@
     <ClCompile Include="..\Gui\patchModeDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Utils\transport.cpp">
+      <Filter>Utils\Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Utils\NtInternal.h">
@@ -103,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="..\Gui\patchModeDialog.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utils\transport.h">
+      <Filter>Utils\Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

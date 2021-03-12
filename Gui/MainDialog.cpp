@@ -205,6 +205,14 @@ CMainDialog::OnInitDialog(
 
     SetWindowText(m_hwndFileName, this->m_pParameters->szDumpFileName);
 
+    RECT  dialogDefault;
+    GetWindowRect(hwnd, &dialogDefault);
+
+    LONG dialogWidth = dialogDefault.right - dialogDefault.left;
+    LONG dialogHeight = dialogDefault.bottom - dialogDefault.top;
+
+
+
     RECT  windowRect;
     GetWindowRect(GetDesktopWindow(), &windowRect);
 
@@ -222,8 +230,8 @@ CMainDialog::OnInitDialog(
         MoveWindow(this->m_hwnd, 
             CConfiguration::Get()->m_hwndRect.left, 
             CConfiguration::Get()->m_hwndRect.top,
-            CConfiguration::Get()->m_hwndRect.right - CConfiguration::Get()->m_hwndRect.left,
-            CConfiguration::Get()->m_hwndRect.bottom - CConfiguration::Get()->m_hwndRect.top,
+            dialogWidth,
+            dialogHeight,
             TRUE);
     }
 

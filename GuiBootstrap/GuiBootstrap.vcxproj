@@ -288,6 +288,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Utils\tarray.cpp" />
+    <ClCompile Include="..\Utils\transport.cpp" />
     <ClCompile Include="GuiBootstrap.cpp" />
     <ClCompile Include="..\Utils\PeHelper.cpp" />
     <ClCompile Include="..\Gui\MainDialog.cpp" />
@@ -307,6 +308,7 @@
     <ClInclude Include="..\Gui\MainDialog.h" />
     <ClInclude Include="..\Utils\singleton.h" />
     <ClInclude Include="..\Utils\tarray.h" />
+    <ClInclude Include="..\Utils\transport.h" />
     <ClInclude Include="..\Utils\utils.h" />
   </ItemGroup>
   <ItemGroup>

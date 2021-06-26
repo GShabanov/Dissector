@@ -106,7 +106,7 @@ GetThreadProcess(IN DWORD dwThreadId)
 
         NTSTATUS status = NtApi.NtQueryInformationThread(
             hThread,
-            ThreadBasicInformation,
+            /*ThreadBasicInformation*/ 0,
             &BasicInfo,
             sizeof(BasicInfo),
             &dwReturnLength);

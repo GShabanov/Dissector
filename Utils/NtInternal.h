@@ -567,7 +567,7 @@ typedef struct _DBGKD_QUERY_SPECIAL_CALLS { // DebugQuerySpecialCalls
 #define ROUND_DOWN(Address, To) ((ULONG_PTR)(Address) & ~((ULONG_PTR)(To)-1))
 
 
-typedef enum _THREAD_INFORMATION_CLASS 
+/*typedef enum _THREAD_INFORMATION_CLASS 
 {
     ThreadBasicInformation, 
     ThreadTimes, 
@@ -587,7 +587,7 @@ typedef enum _THREAD_INFORMATION_CLASS
     ThreadSetTlsArrayAddress, 
     ThreadIsIoPending, 
     ThreadHideFromDebugger,
-} THREAD_INFORMATION_CLASS;
+} THREAD_INFORMATION_CLASS;*/
 
 
 typedef struct _RTL_RELATIVE_NAME {
@@ -620,7 +620,8 @@ typedef NTSTATUS
 typedef NTSTATUS
 (NTAPI *_NtQueryInformationThread)(
   _In_       HANDLE ThreadHandle,
-  _In_       THREAD_INFORMATION_CLASS ThreadInformationClass,
+  /*_In_       THREAD_INFORMATION_CLASS ThreadInformationClass,*/
+  _In_       int ThreadInformationClass,
   _Inout_    PVOID ThreadInformation,
   _In_       ULONG ThreadInformationLength,
   _Out_opt_  PULONG ReturnLength

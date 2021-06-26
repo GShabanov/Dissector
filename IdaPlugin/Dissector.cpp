@@ -54,7 +54,7 @@ HINSTANCE   g_hInstance;
 //static UCHAR           configurationPlace[sizeof(CConfiguration)];
 //CConfiguration  *configuration = (CConfiguration *)configurationPlace;
 
-CConfiguration  *configuration = NULL;
+//CConfiguration  *configuration = NULL;
 
 BOOL WINAPI
 DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID)
@@ -114,7 +114,7 @@ MessageCallback(PVOID, LONG_PTR address, const char *Message)
 
 #undef sprintf
 
-    sprintf(pDescribe, "address 0x%p: %s\r\n", address, Message);
+    sprintf(pDescribe, "address 0x%p: %s\r\n", (void *)address, Message);
 
     msg(pDescribe);
 
@@ -147,6 +147,7 @@ PluginInit()
     {
         return PLUGIN_SKIP;
     }
+    MessageBoxA(NULL, "123", "123", MB_OK);
 
     msg("[*] PluginInit");
 
@@ -658,12 +659,21 @@ PatchMemoryOperationInDebug(
     //
     // fix code in IDA
     // 
+#if (IDA_SDK_VERSION > 660)
     show_addr((ea_t)currentAddress);
+#else 
+#endif
 
+#if (IDA_SDK_VERSION > 660)
     del_items((ea_t)currentAddress, DELIT_EXPAND, (asize_t)dumpDataSize, 0);
+#else 
+#endif
 
     // put bytes on analyze screen
+#if (IDA_SDK_VERSION > 660)
     put_bytes((ea_t)currentAddress, dumpData, dumpDataSize);
+#else 
+#endif
 
     create_insn((ea_t)currentAddress);
 
@@ -795,7 +805,7 @@ DissectProcess(DWORD dwProcessId)
     // parameters preparation
     //
 
-    patchParameters.bMakePermanentChanges = configuration->m_makeChangeOnDisk == TRUE ? TRUE : FALSE;
+    patchParameters.bMakePermanentChanges = CConfiguration::Get()->m_makeChangeOnDisk == TRUE ? TRUE : FALSE;
 
     //
     // give allocators
@@ -871,8 +881,15 @@ DissectProcess(DWORD dwProcessId)
 
 }
 
+
+#if (IDA_SDK_VERSION > 660)
 bool idaapi
 PluginRun(size_t /*arg */)
+#else
+void idaapi
+PluginRun(int /*arg */)
+#endif // (IDA_SDK_VERSION > 660)
+
 /*++
 
     Function:
@@ -888,15 +905,22 @@ PluginRun(size_t /*arg */)
 
 --*/
 {
-    configuration->GetConfig();
+    CConfiguration::Get()->GetConfig();
 
+#if (IDA_SDK_VERSION > 660)
     set_auto_state(st_Think);
+#else 
+#endif //
 
     
     if (get_process_state() == DSTATE_NOTASK)
     {
+#if (IDA_SDK_VERSION > 660)
         set_auto_state(st_Ready);
         return true;
+#else 
+        return;
+#endif //
     }
 
 
@@ -907,19 +931,30 @@ PluginRun(size_t /*arg */)
     if (dwProcessId == NULL)
     {
         msg("[-] failed to get process ID\n");
+#if (IDA_SDK_VERSION > 660)
         set_auto_state(st_Ready);
         return false;
+#else 
+        return;
+#endif //
     }
 
     BOOL result = DissectProcess(dwProcessId);
 
+#if (IDA_SDK_VERSION > 660)
     set_auto_state(st_Ready);
+#else 
+#endif //
 
     msg("[*] finished\n");
 
-    configuration->SaveConfig();
+    CConfiguration::Get()->SaveConfig();
 
+#if (IDA_SDK_VERSION > 660)
     return result == TRUE ? true : false;
+#else
+    UNREFERENCED_PARAMETER(result);
+#endif // (IDA_SDK_VERSION > 660)
 }
 
 
@@ -972,7 +1007,6 @@ plugin_t PLUGIN =
         wanted_name,          // the preferred short name of the plugin
         wanted_hotkey         // the preferred hotkey to run the plugin
 };
-
 
 
 VOID

@@ -71,7 +71,7 @@ CDumpModeDialog::OnInitDialog(
         TCHAR    vaString[MAX_TEMP_STRING];
 
 #ifdef __X64__
-        _stprintf(vaString, _T("0x%016I64X"), m_parameters->choosenVA);
+        _stprintf(vaString, _T("0x%016I64X"), (int64)m_parameters->choosenVA);
         SetWindowText(m_hwndCurrentVA, vaString);
 #else // __X64__
         _stprintf(vaString, _T("0x%08I32X"), m_parameters->choosenVA);
@@ -213,14 +213,24 @@ CDumpModeDialog::OnCommand(
 
             GetWindowText(m_hwndFromVA, vaString, MAX_TEMP_STRING);
 
+#ifdef __X64__
             _stscanf(vaString, "0x%I64X", &toFromVa);
+#else
+            _stscanf(vaString, "0x%X", &toFromVa);
+#endif // __X64__
+
 
             GetWindowText(m_hwndVaSize, vaString, MAX_TEMP_STRING);
 
             _stscanf(vaString, "0x%X", &vaSize);
 
 
+#ifdef __X64__
             _stprintf(vaString, _T("0x%016I64X"), toFromVa + vaSize);
+#else
+            _stprintf(vaString, _T("0x%X"), toFromVa + vaSize);
+#endif // __X64__
+
             SetWindowText(m_hwndToVA, vaString);
         }
 
@@ -235,11 +245,20 @@ CDumpModeDialog::OnCommand(
 
             GetWindowText(m_hwndFromVA, vaString, MAX_TEMP_STRING);
 
+#ifdef __X64__
             _stscanf(vaString, "0x%016I64X", &fromVa);
+#else
+            _stscanf(vaString, "0x%X", &fromVa);
+#endif 
 
             GetWindowText(m_hwndToVA, vaString, MAX_TEMP_STRING);
 
+#ifdef __X64__
             _stscanf(vaString, "0x%016I64X", &toVa);
+#else
+            _stscanf(vaString, "0x%X", &toVa);
+#endif 
+
 
             if (toVa >= fromVa && 
                 (toVa - fromVa) < 0xFFFFFFFF) {

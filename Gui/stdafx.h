@@ -27,6 +27,18 @@
 #define _WIN32_WINNT 0x0501    // Change this to the appropriate value to target IE 5.0 or later.
 #endif
 
+#pragma warning(disable : 26432)
+#pragma warning(disable : 26433)
+#pragma warning(disable : 26440)
+#pragma warning(disable : 26443)
+#pragma warning(disable : 26455)
+#pragma warning(disable : 26461)
+#pragma warning(disable : 26477)
+#pragma warning(disable : 26493)
+#pragma warning(disable : 26495)
+#pragma warning(disable : 26496)
+#pragma warning(disable : 26408)
+
 
 #include <windows.h>
 #include <windowsx.h>
@@ -58,11 +70,11 @@ extern void Assert(const char *expression, const char *file, const int line);
 
 #include "..\Utils\NtInternal.h"
 
-
 //
 //
 //
 
+__pragma(warning(suppress: 6255))
 extern "C" void * __cdecl _alloca(size_t);
 #pragma intrinsic(_alloca)
 
@@ -74,11 +86,13 @@ extern "C" void * __cdecl _alloca(size_t);
 #ifndef __PLACEMENT_NEW_INLINE
 #define __PLACEMENT_NEW_INLINE
 
+__pragma(warning(suppress: 26440))
 inline void *__cdecl operator new(size_t, void *_Where) throw()
 {	// construct array with placement at _Where
 	return (_Where);
 }
 
+__pragma(warning(suppress: 26440))
 inline void __cdecl operator delete(void *, void *) throw()
 {	// delete if placement new fails
 }

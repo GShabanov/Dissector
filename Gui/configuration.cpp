@@ -133,6 +133,10 @@ CConfiguration::SaveConfig()
 BOOL
 CConfiguration::OpenProgramKey(HKEY *hkOutKey, ACCESS_MASK DesiredAccess)
 {
+
+    if (hkOutKey == NULL)
+        return FALSE;
+
     HKEY    hkCurrentUser;
     LSTATUS status = RegOpenKeyEx(HKEY_CURRENT_USER, _T("Software\\Hex-Rays\\IDA"), NULL, DesiredAccess, &hkCurrentUser);
 

@@ -25,8 +25,8 @@
 VOID DescribeError(DWORD dwError, char *string);
 LONG ExceptionFilter(LPEXCEPTION_POINTERS pointers);
 
-BOOL DumpMemoryOperation(const struct _GUI_PARAMETERS *parameters);
-BOOL PatchMemoryOperation(const struct _GUI_PARAMETERS *parameters, BOOL inRunProcess = FALSE);
+BOOL DumpMemoryOperation(const GUI_PARAMETERS *parameters);
+BOOL PatchMemoryOperation(const GUI_PARAMETERS *parameters, BOOL inRunProcess = FALSE);
 
 extern plugin_t PLUGIN;
 void (idaapi* idaview_marker)(ea_t ea);
@@ -110,7 +110,7 @@ MessageCallback(PVOID, LONG_PTR address, const char *Message)
 
 --*/
 {
-    CHAR   *pDescribe = reinterpret_cast<CHAR *>(_alloca(0x1000));
+    CHAR   *pDescribe = static_cast<CHAR *>(_alloca(0x1000));
 
 #undef sprintf
 
@@ -264,6 +264,8 @@ ReadDataFromFile(const TCHAR *fileName, OUT PVOID *buffer, OUT SIZE_T *size)
 
 --*/
 {
+    if (buffer == NULL || size == NULL)
+        return FALSE;
 
     HANDLE hFile = CreateFile(
         fileName,
@@ -293,7 +295,7 @@ ReadDataFromFile(const TCHAR *fileName, OUT PVOID *buffer, OUT SIZE_T *size)
 
     PVOID  data = VirtualAlloc(0, dwFileSize, MEM_COMMIT, PAGE_READWRITE);
 
-    if (data == 0)
+    if (data == NULL)
     {
         msg("[-] VirtualAlloc is failed\n");
         CloseHandle(hFile);
@@ -352,6 +354,9 @@ QueryDumpParameters(GUI_PARAMETERS *parameters)
     }
 
     MEMORY_BASIC_INFORMATION    memBasic;
+
+    memset(&memBasic, 0, sizeof(MEMORY_BASIC_INFORMATION));
+
     if (VirtualQueryEx(
         hProcess,
         (LPCVOID)(LONG_PTR)currentAddress,
@@ -408,6 +413,9 @@ QueryPatchParameters(GUI_PARAMETERS *parameters)
     }
 
     MEMORY_BASIC_INFORMATION    memBasic;
+
+    memset(&memBasic, 0, sizeof(MEMORY_BASIC_INFORMATION));
+
     if (VirtualQueryEx(
         hProcess,
         (LPCVOID)(LONG_PTR)currentAddress,
@@ -474,7 +482,7 @@ DumpMemoryOperation(const GUI_PARAMETERS *parameters)
         return FALSE;
     }
 
-    DUMP_PARAMETERS *pDumpParameters = parameters->pDumpParameters;
+    const DUMP_PARAMETERS *pDumpParameters = (const DUMP_PARAMETERS *)parameters->pDumpParameters;
 
     PVOID  dumpBuffer = NULL;
     SIZE_T  toReadSize = 0;
@@ -555,7 +563,7 @@ PatchMemoryOperationInDebug(
         FALSE,
         parameters->dwProcessId);
 
-    if (hProcess == NULL)
+    if (hProcess == nullptr)
     {
         DescribeError(GetLastError(), "[-] failed to open process");
         return FALSE;
@@ -563,19 +571,23 @@ PatchMemoryOperationInDebug(
 
     MODULE_ENUM_ENTRY ModuleEntry;
 
+    ModuleEntry.modulePath = NULL;
+
     if (GetModuleForAddress(hProcess, currentAddress, &ModuleEntry) != TRUE)
     {
         CloseHandle(hProcess);
         return FALSE;
     }
 
-    if (ModuleEntry.modulePath == 0)
+    if (ModuleEntry.modulePath == NULL)
     {
         CloseHandle(hProcess);
         return FALSE;
     }
 
-    ULONG  rva = (ULONG)((ULONG64)currentAddress - (ULONG64)ModuleEntry.moduleStart);
+    ULONG  rva = (ULONG)(
+        (ULONG64)currentAddress - (ULONG64)ModuleEntry.moduleStart);
+
     BOOL   _return = FALSE;
     //
     // in case of permanent changes
@@ -585,7 +597,7 @@ PatchMemoryOperationInDebug(
         SIZE_T  newSize = (_tcslen(ModuleEntry.modulePath) + 1) * sizeof(TCHAR);
         TCHAR   *newFileName = (TCHAR *)malloc(newSize);
 
-        if (newFileName != 0)
+        if (newFileName != nullptr)
         {
             _tcscpy(newFileName, ModuleEntry.modulePath);
             _tcscat(newFileName, _T(".tmp"));
@@ -635,7 +647,7 @@ PatchMemoryOperationInDebug(
                 ReadFileFunction, hFile, (ULONG64)0, rva, &physicalOffsetInFile) == TRUE)
             {
 
-                SetFilePointer(hFile, (LONG)physicalOffsetInFile, NULL, FILE_BEGIN);
+                SetFilePointer(hFile, (LONG)physicalOffsetInFile, nullptr, FILE_BEGIN);
 
                 DWORD   dwWritten = 0;
 
@@ -653,27 +665,37 @@ PatchMemoryOperationInDebug(
 
 
     SIZE_T   dwWritten = 0;
-    _return |= WriteProcessMemory(hProcess, (LPVOID)currentAddress, dumpData, dumpDataSize, &dwWritten);
+    _return |= WriteProcessMemory(
+        hProcess,
+        reinterpret_cast<LPVOID>(currentAddress),
+        dumpData,
+        dumpDataSize,
+        &dwWritten);
 
 
     //
     // fix code in IDA
     // 
-#if (IDA_SDK_VERSION > 660)
-    show_addr((ea_t)currentAddress);
-#else 
-#endif
+#if (IDA_SDK_VERSION >= 700)
 
-#if (IDA_SDK_VERSION > 660)
+    show_addr((ea_t)currentAddress);
+
     del_items((ea_t)currentAddress, DELIT_EXPAND, (asize_t)dumpDataSize, 0);
-#else 
-#endif
 
     // put bytes on analyze screen
-#if (IDA_SDK_VERSION > 660)
     put_bytes((ea_t)currentAddress, dumpData, dumpDataSize);
+
 #else 
+
+    showAddr((ea_t)currentAddress);
+
+    do_unknown_range((ea_t)currentAddress, dumpDataSize, true);
+
+    // put bytes on analyze screen
+    put_many_bytes((ea_t)currentAddress, dumpData, dumpDataSize);
+
 #endif
+
 
     create_insn((ea_t)currentAddress);
 
@@ -744,7 +766,7 @@ PatchMemoryOperation(
 
 --*/
 {
-    PVOID  dumpFile = 0;
+    PVOID  dumpFile = nullptr;
     SIZE_T dumpFileSize = 0;
 
     if (ReadDataFromFile(parameters->szDumpFileName, &dumpFile, &dumpFileSize) != TRUE)
@@ -799,14 +821,13 @@ DissectProcess(DWORD dwProcessId)
     memset(&dumpParameters, 0, sizeof(dumpParameters));
     memset(&patchParameters, 0, sizeof(patchParameters));
 
-    GUI_PARAMETERS  parameters;
-
     //
     // parameters preparation
     //
 
     patchParameters.bMakePermanentChanges = CConfiguration::Get()->m_makeChangeOnDisk == TRUE ? TRUE : FALSE;
 
+    GUI_PARAMETERS  parameters;
     //
     // give allocators
     //
@@ -814,15 +835,17 @@ DissectProcess(DWORD dwProcessId)
     parameters._allocFunction = malloc;
     parameters._freeFunction  = free;
 
-    parameters.szDumpFileName = (TCHAR *)parameters._allocFunction(MAX_PATH * sizeof(TCHAR));
+    parameters.szDumpFileName = static_cast<TCHAR *>(
+        parameters._allocFunction(MAX_PATH * sizeof(TCHAR)));
 
-    if (parameters.szDumpFileName == 0) {
+    if (parameters.szDumpFileName == nullptr) {
+
         return FALSE;
     }
 
     _tcscpy(parameters.szDumpFileName, _T("memory.dmp"));
 
-    parameters.context = NULL;
+    parameters.context = nullptr;
     parameters.dwProcessId = dwProcessId;
     parameters.pDumpParameters = &dumpParameters;
     parameters.pPatchParameters = &patchParameters;
@@ -830,7 +853,7 @@ DissectProcess(DWORD dwProcessId)
     parameters.enumerateMemoryRegions = &EnumerateMemoryRegions;
     parameters.queryDumpParameters = &QueryDumpParameters;
     parameters.queryPatchParameters = &QueryPatchParameters;
-    parameters.queryNopingParameters = NULL;
+    parameters.queryNopingParameters = nullptr;
 
 
     //
@@ -882,7 +905,7 @@ DissectProcess(DWORD dwProcessId)
 }
 
 
-#if (IDA_SDK_VERSION > 660)
+#if (IDA_SDK_VERSION >= 700)
 bool idaapi
 PluginRun(size_t /*arg */)
 #else
@@ -907,18 +930,20 @@ PluginRun(int /*arg */)
 {
     CConfiguration::Get()->GetConfig();
 
-#if (IDA_SDK_VERSION > 660)
+#if (IDA_SDK_VERSION >= 700)
     set_auto_state(st_Think);
-#else 
+#else
+    setStat(st_Think);
 #endif //
 
     
     if (get_process_state() == DSTATE_NOTASK)
     {
-#if (IDA_SDK_VERSION > 660)
+#if (IDA_SDK_VERSION >= 700)
         set_auto_state(st_Ready);
         return true;
 #else 
+        setStat(st_Ready);
         return;
 #endif //
     }
@@ -928,33 +953,35 @@ PluginRun(int /*arg */)
 
     DWORD dwProcessId = GetThreadProcess((DWORD)currentDebugThread);
 
-    if (dwProcessId == NULL)
+    if (dwProcessId == 0)
     {
         msg("[-] failed to get process ID\n");
-#if (IDA_SDK_VERSION > 660)
+#if (IDA_SDK_VERSION >= 700)
         set_auto_state(st_Ready);
         return false;
 #else 
+        setStat(st_Ready);
         return;
 #endif //
     }
 
     BOOL result = DissectProcess(dwProcessId);
 
-#if (IDA_SDK_VERSION > 660)
+#if (IDA_SDK_VERSION >= 700)
     set_auto_state(st_Ready);
 #else 
+    setStat(st_Ready);
 #endif //
 
     msg("[*] finished\n");
 
     CConfiguration::Get()->SaveConfig();
 
-#if (IDA_SDK_VERSION > 660)
+#if (IDA_SDK_VERSION >= 700)
     return result == TRUE ? true : false;
 #else
     UNREFERENCED_PARAMETER(result);
-#endif // (IDA_SDK_VERSION > 660)
+#endif // (IDA_SDK_VERSION >= 700)
 }
 
 
@@ -976,12 +1003,11 @@ ExceptionFilter(LPEXCEPTION_POINTERS pointers)
 --*/
 {    
 
-    TCHAR   *pExceptionDescribe = reinterpret_cast<TCHAR *>(
-        _alloca(sizeof(0x1000) * sizeof(TCHAR)));
+    TCHAR   *pExceptionDescribe = (TCHAR *)_alloca(0x1000 * sizeof(TCHAR));
 
 #undef sprintf
 
-    _stprintf(pExceptionDescribe, _T("Main module exception: address 0x%p, code %d"),
+    _stprintf(pExceptionDescribe, _T("Main module exception: address 0x%p, code 0x%04X"),
         pointers->ExceptionRecord->ExceptionAddress,
         pointers->ExceptionRecord->ExceptionCode);
 
@@ -1012,7 +1038,7 @@ plugin_t PLUGIN =
 VOID
 DescribeError(DWORD dwError, char *string)
 {
-    TCHAR   *lpMsgBuf = NULL;
+    TCHAR   *lpMsgBuf = nullptr;
 
     if (!::FormatMessage( 
         FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -1029,9 +1055,9 @@ DescribeError(DWORD dwError, char *string)
         return;
     }
 
-    CHAR   *szErrorDescribe = reinterpret_cast<CHAR *>(_alloca(0x1000));
+    CHAR   *szErrorDescribe = (CHAR *)_alloca(0x1000);
 
-    sprintf(szErrorDescribe, "Error: %s\r\n error: %s [%d]\r\n",
+    sprintf(szErrorDescribe, "Error: %s\r\n error: %s [%u]\r\n",
         string,
         lpMsgBuf, dwError);
 
